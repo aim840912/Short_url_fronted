@@ -34,6 +34,7 @@ function CreateArea(props) {
             }
             return res.json()
         }).then(resData => {
+            window.location.reload()
             setUrl({
                 long_url: '',
             })

@@ -42,21 +42,14 @@ class App extends Component {
                 Authorization: 'Bearer ' + token
             }
         }).then(res => {
-
             if (res.status !== 200) {
                 throw new Error('Failed to fetch')
             }
             return res.json()
         }).then(resData => {
-            // resData.map(resd => {
             this.setState({
                 posts: resData
-                // urlname: resData.url_name,
-                // surl: resData.shortUrl
-                // }) 
             })
-            // console.log(this.state.posts)
-
         }).catch(err => {
             console.log(err)
         })
@@ -166,10 +159,7 @@ class App extends Component {
                     ) :
                     <div>
                         <InputShortUrl token={this.state.token} />
-
-                        <UrlPage token={this.state.token}/>
-
-
+                        <UrlPage token={this.state.token} />
                     </div>
             }
 

@@ -39,23 +39,39 @@ class UrlPage extends Component {
     })
   }
 
+  deletePostHandler(urlId) {
+    // console.log(this.props.token)
+    fetch('http://localhost:8080/surl/' + urlId, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    }).then((res) => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Deleting a post failed!')
+      }
+      return res.json()
+    }).then(resData => {
+      this.loadPost(this.props.token)
+    }).catch((err) => {
+        console.log(err)
+      });
+  }
+
   render() {
-    var httpa = `http://localhost:8080${this.state.posts}`
     return (
       <div>
         {this.state.posts.map(element => (
           <div key={element._id} className="note" >
             <h1>{element.url_name}</h1>
-            <p>短網址   <a href={`http://localhost:8080${element.shortUrl}`} >{`http://localhost:8080${element.shortUrl}`}</a></p>
-          
-            <button > <DeleteIcon /></button>
+            <p>短網址<a href={`http://localhost:8080${element.shortUrl}`}>{`http://localhost:8080${element.shortUrl}`}</a></p>
+
+            <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>
           </div>
-        ))
-        }
+        ))}
       </div>
     );
   }
-
 }
 
 export default UrlPage;
