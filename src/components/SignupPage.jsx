@@ -34,10 +34,10 @@ function SingupPage(props) {
 
                 <label>email</label>
                 <input name="email" onChange={inputChangeHandler} value={
-                    account.email} placeholder="輸入 email" />
+                    account.email} type="email" placeholder="輸入 email" />
                 <label>password</label>
                 <input name="password" onChange={inputChangeHandler} value={
-                    account.password} placeholder="輸入 password" />
+                    account.password} type="password" placeholder="輸入 password 要大於 7 個字" />
 
                 <button type="submit" >Signup</button>
             </form>

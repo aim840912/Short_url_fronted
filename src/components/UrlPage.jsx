@@ -32,7 +32,7 @@ class UrlPage extends Component {
         // surl: resData.shortUrl
         // }) 
       })
-      console.log(this.state.posts)
+      // console.log(this.state.posts)
 
     }).catch(err => {
       console.log(err)
@@ -54,8 +54,8 @@ class UrlPage extends Component {
     }).then(resData => {
       this.loadPost(this.props.token)
     }).catch((err) => {
-        console.log(err)
-      });
+      console.log(err)
+    });
   }
 
   render() {
@@ -64,9 +64,10 @@ class UrlPage extends Component {
         {this.state.posts.map(element => (
           <div key={element._id} className="note" >
             <h1>{element.url_name}</h1>
-            <p>短網址<a href={`http://localhost:8080${element.shortUrl}`}>{`http://localhost:8080${element.shortUrl}`}</a></p>
+            <p>短網址 ▼</p>
+            <a href={`http://localhost:8080${element.shortUrl}`}>{`http://localhost:8080${element.shortUrl}`}</a>
 
-            <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>
+            {this.props.userId === element.owner && <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>}
           </div>
         ))}
       </div>

@@ -31,7 +31,7 @@ function LoginPage(props) {
                     account.email} placeholder="輸入 email" />
                 <label>password</label>
                 <input name="password" onChange={inputChangeHandler} value={
-                    account.password} placeholder="輸入 password" />
+                    account.password} type="password" placeholder="輸入 password" />
 
                 <button type="submit">Login</button>
             </form>

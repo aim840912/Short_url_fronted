@@ -5,6 +5,20 @@ import InputShortUrl from './InputShortUrl'
 import LoginPage from './LoginPage'
 import SignupPage from './SignupPage'
 import UrlPage from './UrlPage'
+import Modal from 'react-modal';
+
+const customStyles = {
+    content: {
+        top: '50%',
+        left: '50%',
+        right: 'auto',
+        bottom: 'auto',
+        marginRight: '-50%',
+        transform: 'translate(-50%, -50%)'
+    }
+}
+
+Modal.setAppElement('#root')
 
 class App extends Component {
     state = {
@@ -12,7 +26,11 @@ class App extends Component {
         token: null,
         userId: null,
         error: null,
-        posts: []
+        posts: [],
+        modalIsOpen: false,
+        modalTitle: "",
+        modalInformation: "",
+        message: ""
     }
 
     componentDidMount() {
@@ -68,6 +86,15 @@ class App extends Component {
         localStorage.removeItem('expiryDate');
         localStorage.removeItem('userId');
     };
+
+    closeModal = () => {
+        this.setState({
+            modalIsOpen: !this.state.modalIsOpen,
+            modalTitle: "",
+            modalInformation: "",
+            message: ""
+        })
+    }
 
     loginHandler = (event, authData) => {
         event.preventDefault()
@@ -141,6 +168,10 @@ class App extends Component {
             }
             return res.json();
         }).then(resData => {
+            this.setState({
+                modalIsOpen: true,
+                modalTitle: 'Sign up Success'
+            })
         }).catch(err => {
         });
     }
@@ -159,10 +190,19 @@ class App extends Component {
                     ) :
                     <div>
                         <InputShortUrl token={this.state.token} />
-                        <UrlPage token={this.state.token} />
+                        <UrlPage userId={this.state.userId} token={this.state.token} />
+
                     </div>
             }
-
+            <Modal
+                isOpen={this.state.modalIsOpen}
+                style={customStyles}
+                contentLabel="Modal"
+                onRequestClose={this.closeModal}>
+                <h1>{this.state.modalTitle}</h1>
+                <div>{this.state.modalInformation}</div>
+                <button onClick={this.closeModal}>close</button>
+            </Modal>
             <Footer />
         </div >
     }

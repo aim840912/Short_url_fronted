@@ -4,7 +4,7 @@ import React from "react";
 function Header(props) {
   return (
     <header>
-      <h1>React
+      <h1>Tiny Url
       {props.isLogin ?
           <button
             className="header-item" onClick={props.onLogout}>Logout</button> :
