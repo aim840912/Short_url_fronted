@@ -201,6 +201,7 @@ class App extends Component {
                 onRequestClose={this.closeModal}>
                 <h1>{this.state.modalTitle}</h1>
                 <div>{this.state.modalInformation}</div>
+                <p> </p>
                 <button onClick={this.closeModal}>close</button>
             </Modal>
             <Footer />
