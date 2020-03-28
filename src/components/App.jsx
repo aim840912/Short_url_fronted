@@ -1,24 +1,16 @@
 import React, { Component } from 'react'
 import Header from './Header'
 import Footer from './Footer'
-import InputShortUrl from './InputShortUrl'
 import LoginPage from './LoginPage'
 import SignupPage from './SignupPage'
 import UrlPage from './UrlPage'
-import Modal from 'react-modal';
 
-const customStyles = {
-    content: {
-        top: '50%',
-        left: '50%',
-        right: 'auto',
-        bottom: 'auto',
-        marginRight: '-50%',
-        transform: 'translate(-50%, -50%)'
-    }
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+  return <MuiAlert elevation={1} variant="filled" {...props} />;
 }
 
-Modal.setAppElement('#root')
 
 class App extends Component {
     state = {
@@ -27,9 +19,6 @@ class App extends Component {
         userId: null,
         error: null,
         posts: [],
-        modalIsOpen: false,
-        modalTitle: "",
-        modalInformation: "",
         message: ""
     }
 
@@ -52,8 +41,6 @@ class App extends Component {
         this.setState({  token: token, userId: userId });
         this.setAutoLogout(remainingMilliseconds);
     }
-
-  
 
     loadPost = (token) => {
         fetch('http://localhost:8080/surl', {
@@ -90,14 +77,7 @@ class App extends Component {
         localStorage.removeItem('userId');
     };
 
-    closeModal = () => {
-        this.setState({
-            modalIsOpen: !this.state.modalIsOpen,
-            modalTitle: "",
-            modalInformation: "",
-            message: ""
-        })
-    }
+   
 
     loginHandler = (event, authData) => {
         event.preventDefault()
@@ -172,10 +152,10 @@ class App extends Component {
             return res.json();
         }).then(resData => {
             this.setState({
-                modalIsOpen: true,
-                modalTitle: 'Sign up Success'
+            
             })
         }).catch(err => {
+            console.log(err)
         });
     }
 
@@ -192,21 +172,9 @@ class App extends Component {
                         </div>
                     ) :
                     <div>
-                        <InputShortUrl token={this.state.token} />
                         <UrlPage userId={this.state.userId} token={this.state.token} />
-
                     </div>
             }
-            <Modal
-                isOpen={this.state.modalIsOpen}
-                style={customStyles}
-                contentLabel="Modal"
-                onRequestClose={this.closeModal}>
-                <h1>{this.state.modalTitle}</h1>
-                <div>{this.state.modalInformation}</div>
-                <p> </p>
-                <button onClick={this.closeModal}>close</button>
-            </Modal>
             <Footer />
         </div >
     }

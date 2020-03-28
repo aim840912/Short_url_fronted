@@ -1,31 +1,25 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 
-function CreateArea(props) {
+class CreateArea extends Component {
+    state = {
+        long_url: ""
+    }
 
-    const [url, setUrl] = useState({
-        long_url: "",
-    })
-
-    function handleChange(event) {
-        console.log(event.target)
-        const { long_url, value } = event.target
-
-        setUrl(prevUrl => {
-            return {
-                ...prevUrl,
-                long_url: value
-            }
+    handleChange = (event) => {
+        this.setState({
+            long_url: event.target.value
         })
     }
-    function postHandler(e) {
+
+    postHandler = (e) => {
         e.preventDefault()
         fetch('http://localhost:8080/surl/submit', {
             method: 'POST',
             body: JSON.stringify({
-                url:url.long_url
+                url: this.state.long_url
             }),
             headers: {
-                Authorization: 'Bearer ' + props.token,
+                Authorization: 'Bearer ' + this.props.token,
                 'Content-Type': 'application/json'
             }
         }).then((res) => {
@@ -34,30 +28,28 @@ function CreateArea(props) {
             }
             return res.json()
         }).then(resData => {
-            window.location.reload()
-            setUrl({
+            this.setState({
                 long_url: '',
             })
         }).catch((err) => {
-          console.log(err)
+            console.log(err)
         });
     }
 
-    return (
-        <div>
-            <form onSubmit={postHandler}>
-                <input
-                    type="text"
-                    long_url="long_url"
-                    onChange={handleChange}
-                    value={url.long_url}
-                    placeholder="Paste your long URL"
-                />
-                <button >Add</button>
-
-            </form>
-        </div>
-    )
+    render() {
+        return (
+            <div>
+                <form onSubmit={this.postHandler}>
+                    <input
+                        type="text"
+                        long_url="long_url"
+                        onChange={this.handleChange}
+                        value={this.state.long_url}
+                        placeholder="Paste your long URL" />
+                    <button >Add</button>
+                </form>
+            </div >
+        )
+    }
 }
-
 export default CreateArea

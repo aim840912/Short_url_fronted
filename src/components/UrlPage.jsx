@@ -2,29 +2,15 @@ import React, { Component } from "react";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from '@material-ui/icons/Edit';
 import CheckIcon from '@material-ui/icons/Check';
-import Modal from 'react-modal';
 
-
-const customStyles = {
-  content: {
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)'
-  }
-}
-
+import InputShortUrl from './InputShortUrl'
 
 class UrlPage extends Component {
   state = {
     posts: [],
     patchpost: [],
-    modalIsOpen: false,
-    modalTitle: "",
-    modalInformation: "",
-    thisUser: false
+    patchpostId: [],
+    modifyIsOpen: false,
   }
 
   componentDidMount() {
@@ -33,18 +19,10 @@ class UrlPage extends Component {
 
   handleChange = (event) => {
     // console.log(event.target.value)
-    this.setState({ patchpost: event.target.value })
-  }
-
-  closeModal = () => {
     this.setState({
-      modalIsOpen: !this.state.modalIsOpen,
-      modalTitle: "",
-      modalInformation: "",
-      message: ""
+      patchpost: event.target.value
     })
   }
-
   loadPost = (token) => {
     fetch('http://localhost:8080/surl', {
       method: "GET",
@@ -57,21 +35,17 @@ class UrlPage extends Component {
       }
       return res.json()
     }).then(resData => {
-      // resData.map(resd => {
       this.setState({
-        posts: resData,
-        thisUser: true
+        posts: resData
         // urlname: resData.url_name,
         // surl: resData.shortUrl
-        // }) 
+        // })
       })
       // console.log(this.state.posts)
 
     }).catch(err => {
       console.log(err)
-      this.setState({
-        thisUser: false
-      })
+
     })
   }
 
@@ -83,7 +57,8 @@ class UrlPage extends Component {
     }).then(resData => {
       this.setState({
         patchpost: resData.url_name,
-        modalIsOpen: true
+        patchpostId: urlId,
+        modifyIsOpen: true,
       })
     }).catch(err => {
       console.log(err)
@@ -109,7 +84,6 @@ class UrlPage extends Component {
   }
 
   editPostHandler(event, urlId) {
-    console.log(urlId)
     event.preventDefault()
     fetch('http://localhost:8080/surl/' + urlId, {
       method: 'PATCH',
@@ -126,7 +100,10 @@ class UrlPage extends Component {
       }
       return res.json()
     }).then((resData) => {
-      window.location.reload()
+      this.loadPost(this.props.token)
+      this.setState({
+        modifyIsOpen: !this.state.modifyIsOpen
+      })
     }).catch(err => {
       console.log(err)
     })
@@ -135,28 +112,26 @@ class UrlPage extends Component {
   render() {
     return (
       <div>
+        <InputShortUrl token={this.props.token}/>
+        {this.state.modifyIsOpen &&
+          <form onSubmit={(e) => this.editPostHandler(e, this.state.patchpostId)}>
+            <label>the url you want to modify</label>
+            <input
+              name="url"
+              value={this.state.patchpost}
+              onChange={this.handleChange} />
+            <button ><CheckIcon /></button>
+          </form>
+        }
+
         {
           this.state.posts.map(element => (
             <div key={element._id} className="note" >
               <h1>{element.url_name}</h1>
               <p>短網址 ▼</p>
               <a href={`http://localhost:8080${element.shortUrl}`}>{`http://localhost:8080${element.shortUrl}`}</a>
-              {this.state.thisUser && <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>}
-              {this.state.thisUser && <button onClick={() => this.loadPatchPost(element._id)}> <EditIcon /></button>}
-              <Modal
-                isOpen={this.state.modalIsOpen}
-                style={customStyles}
-                contentLabel="Modal"
-                onRequestClose={this.closeModal}>
-                <form onSubmit={(e) => this.editPostHandler(e, element._id)}>
-                  <label>{this.state.patchpost}</label>
-                  <input
-                    name="Url"
-                    value={this.state.patchpost}
-                    onChange={this.handleChange} />
-                  <button ><CheckIcon /></button>
-                </form>
-              </Modal>
+              <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>
+              <button onClick={() => this.loadPatchPost(element._id)}> <EditIcon /></button>
             </div>
           ))
         }
@@ -164,5 +139,4 @@ class UrlPage extends Component {
     );
   }
 }
-
 export default UrlPage;
