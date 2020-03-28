@@ -24,10 +24,16 @@ class UrlPage extends Component {
     modalIsOpen: false,
     modalTitle: "",
     modalInformation: "",
+    thisUser: false
   }
 
   componentDidMount() {
     this.loadPost(this.props.token)
+  }
+
+  handleChange = (event) => {
+    // console.log(event.target.value)
+    this.setState({ patchpost: event.target.value })
   }
 
   closeModal = () => {
@@ -53,7 +59,8 @@ class UrlPage extends Component {
     }).then(resData => {
       // resData.map(resd => {
       this.setState({
-        posts: resData
+        posts: resData,
+        thisUser: true
         // urlname: resData.url_name,
         // surl: resData.shortUrl
         // }) 
@@ -62,6 +69,9 @@ class UrlPage extends Component {
 
     }).catch(err => {
       console.log(err)
+      this.setState({
+        thisUser: false
+      })
     })
   }
 
@@ -98,19 +108,27 @@ class UrlPage extends Component {
     });
   }
 
-  editPostHandler(urlId) {
+  editPostHandler(event, urlId) {
+    console.log(urlId)
+    event.preventDefault()
     fetch('http://localhost:8080/surl/' + urlId, {
       method: 'PATCH',
       headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
+        Authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        url_name: this.state.patchpost
+      })
     }).then((res) => {
       if (res.status !== 200 && res.status !== 201) {
         throw new Error('Deleting a post failed!')
       }
       return res.json()
     }).then((resData) => {
-
+      window.location.reload()
+    }).catch(err => {
+      console.log(err)
     })
   }
 
@@ -123,20 +141,20 @@ class UrlPage extends Component {
               <h1>{element.url_name}</h1>
               <p>短網址 ▼</p>
               <a href={`http://localhost:8080${element.shortUrl}`}>{`http://localhost:8080${element.shortUrl}`}</a>
-              {this.props.userId === element.owner && <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>}
-              {this.props.userId === element.owner && <button onClick={() => this.loadPatchPost(element._id)}> <EditIcon /></button>}
+              {this.state.thisUser && <button onClick={() => this.deletePostHandler(element._id)}> <DeleteIcon /></button>}
+              {this.state.thisUser && <button onClick={() => this.loadPatchPost(element._id)}> <EditIcon /></button>}
               <Modal
                 isOpen={this.state.modalIsOpen}
                 style={customStyles}
                 contentLabel="Modal"
                 onRequestClose={this.closeModal}>
-                <form>
-                  <label>The Url that you want to shorten</label>
+                <form onSubmit={(e) => this.editPostHandler(e, element._id)}>
+                  <label>{this.state.patchpost}</label>
                   <input
                     name="Url"
                     value={this.state.patchpost}
-                    onChange={this.state.patchpost} />
-                  <button onClick={() => this.editPostHandler(element._id)}><CheckIcon /></button>
+                    onChange={this.handleChange} />
+                  <button ><CheckIcon /></button>
                 </form>
               </Modal>
             </div>

@@ -49,9 +49,11 @@ class App extends Component {
         const userId = localStorage.getItem('userId');
         const remainingMilliseconds =
             new Date(expiryDate).getTime() - new Date().getTime();
-        this.setState({ isAuth: true, token: token, userId: userId });
+        this.setState({  token: token, userId: userId });
         this.setAutoLogout(remainingMilliseconds);
     }
+
+  
 
     loadPost = (token) => {
         fetch('http://localhost:8080/surl', {
@@ -66,7 +68,8 @@ class App extends Component {
             return res.json()
         }).then(resData => {
             this.setState({
-                posts: resData
+                posts: resData,
+                isAuth: true
             })
         }).catch(err => {
             console.log(err)
